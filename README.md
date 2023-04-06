@@ -17,7 +17,9 @@ Setup
 
 ```bash
 OPENSHIFT_RP_OBJECT_ID=$(az ad sp list --display-name "Azure Red Hat OpenShift RP" --query '[0].id' -o tsv)
-terraform -chdir=setup plan -out setup.plan -var aro_resource_provider_id=$OPENSHIFT_RP_OBJECT_ID -var resource_group_name=$RESOURCE_GROUP_NAME -var location=$LOCATION
+terraform -chdir=setup plan -out setup.plan -var aro_resource_provider_id=$OPENSHIFT_RP_OBJECT_ID \
+  -var resource_group_name=$RESOURCE_GROUP_NAME -var location=$LOCATION
+terraform -chdir=setup apply
 ```
 
 Yank subnets
@@ -40,5 +42,7 @@ AZR_SP_PASSWORD=$(echo $AZR_SP | jq -r '.password')
 Create cluster
 
 ```bash
-terraform -chdir=cluster plan -out cluster.plan -var location=$LOCATION -var resource_group_name=$RESOURCE_GROUP_NAME -var master_subnet_id=$CONTROL_SUBNET_ID -var worker_subnet_id=$COMPUTE_SUBNET_ID -var client_id=$AZR_SP_APP_ID -var client_secret=$AZR_SP_PASSWORD
+terraform -chdir=cluster plan -out cluster.plan -var location=$LOCATION -var resource_group_name=$RESOURCE_GROUP_NAME \
+  -var master_subnet_id=$CONTROL_SUBNET_ID -var worker_subnet_id=$COMPUTE_SUBNET_ID -var client_id=$AZR_SP_APP_ID -var client_secret=$AZR_SP_PASSWORD
+terraform -chdir=cluster apply
 ```
